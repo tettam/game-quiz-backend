@@ -1,0 +1,2 @@
+get - /api/questions - /api/get.php
+get - /api/questions/1 - /api/get.php?id=1
