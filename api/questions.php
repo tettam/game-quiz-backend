@@ -49,7 +49,6 @@ try {
   $dataOptions = $sql->fetchAll(PDO::FETCH_ASSOC);
   foreach ($dataOptions as $item) {
     $array['result']['question']['answers'][] = [
-        'id' => $item['id'],
         'answer' => $item['answer'],
         'isCorrect' => $item['is_correct']
     ];

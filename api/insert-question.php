@@ -2,6 +2,9 @@
 require('../config.php');
 
 $method = strtolower($_SERVER['REQUEST_METHOD']);
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
 try {
   if($method !== 'post') {
@@ -39,7 +42,7 @@ try {
     }
   }
   if($answersFalse !== 4 || $answerTrue !== 1) {
-    $array['error'] = 'Deve haver um resposta VERDADEIRA e quatro FALSAS';
+    $array['error'] = 'Deve haver uma resposta VERDADEIRA e quatro FALSAS';
     require('../return.php');
     exit;
   }
@@ -57,12 +60,25 @@ try {
   //Insert Answers
   foreach($answers as $item) {
     $sql = $pdo->prepare("INSERT INTO answers (answer, question_id, is_correct) VALUES (:answer, :questionId, :isCorrect)");
-    $sql->bindValue(":answer", "ok");
-    $sql->bindValue(":questionId", 15, PDO::PARAM_INT);
-    $sql->bindValue(":isCorrect", false, PDO::PARAM_BOOL);
+    $sql->bindValue(":answer", $item['answer']);
+    $sql->bindValue(":questionId", $questionLastId, PDO::PARAM_INT);
+    $sql->bindValue(":isCorrect", $item['is_correct'] , PDO::PARAM_BOOL);
     $sql->execute();
   }
   
+  $array['result'] = [
+    'id' => $questionLastId,
+    'question' => $question,
+    'answers' => []
+  ];
+
+  foreach ($answers as $item) {
+    $array['result']['answers'][] = [
+      'answer' => $item['answer'],
+      'isCorrect' => $item['is_correct']
+    ];
+  }
+
   require('../return.php');
 
 } catch (Exception $e) {
